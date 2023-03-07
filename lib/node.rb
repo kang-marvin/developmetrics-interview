@@ -1,10 +1,12 @@
+require 'set'
+
 class Node
   attr_accessor :value, :_nodes
 
   def initialize(value)
     raise ArgumentError if value.to_s.empty?
 
-    @value = value
+    @value = value.to_s
     @_nodes ||= Set.new
   end
 
