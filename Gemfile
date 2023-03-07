@@ -7,3 +7,7 @@ gem 'rubocop', '~> 1.21'
 
 # RSpec
 gem 'rspec'
+
+# JSON
+gem 'json'
+
