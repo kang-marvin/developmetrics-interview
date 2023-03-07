@@ -12,8 +12,8 @@ RSpec.describe Node do
   end
 
   describe 'Adding nodes' do
-    let(:child) { Node.new('Child') }
-    let(:parent) { Node.new('Parent') }
+    let(:child) { Node.new('Child (US)') }
+    let(:parent) { Node.new('Parent (US)') }
 
     it 'increases parent nodes count by 1' do
       expect do

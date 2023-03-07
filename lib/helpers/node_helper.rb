@@ -6,7 +6,7 @@ class NodeHelper
       node_value = name.upcase.to_sym
       return nodes[node_value] unless nodes[node_value].nil?
 
-      node = Node.new(node_value)
+      node = Node.new(name)
       nodes[node_value] = node
       node
     end
