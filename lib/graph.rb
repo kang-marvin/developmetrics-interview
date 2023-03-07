@@ -3,11 +3,11 @@ require_relative './helpers/node_helper'
 class Graph
   attr_accessor :nodes, :data
 
-  def self.call data
+  def self.call(data)
     new(data).generate_graph
   end
 
-  def initialize data
+  def initialize(data)
     @nodes = {}
     @data = data
   end
@@ -18,9 +18,10 @@ class Graph
       value.each do |child|
         child_node = NodeHelper.fetch_or_create_node(child, nodes)
         next if parent_node === child_node
+
         parent_node.add_node(child_node)
       end
     end
-    return nodes
+    nodes
   end
 end
