@@ -10,4 +10,3 @@ gem 'rspec'
 
 # JSON
 gem 'json'
-
