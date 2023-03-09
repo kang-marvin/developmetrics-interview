@@ -24,7 +24,7 @@ class Search
 
   def call(params)
     breadth_first(ZERO, params)
-    depth_first(graph, params)
+    # depth_first(ZERO, graph, params)
 
     puts nodes_collection.map(&:value).inspect
   end
@@ -66,12 +66,12 @@ class Search
     end
   end
 
-  def depth_first(node = graph, filters = {})
+  def depth_first(level = 0, node = graph, filters = {})
     return if nodes_collection.include? node
     nodes_collection << node
-    root_nodes = node.nodes
-    root_nodes.each do |node|
-      depth_first(node, filters)
+
+    node.nodes.each do |node|
+      depth_first((level+1), node, filters)
     end
   end
 
