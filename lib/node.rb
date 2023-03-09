@@ -18,6 +18,10 @@ class Node
     _nodes.to_a
   end
 
+  def value
+    "#{name}: #{country.upcase}"
+  end
+
   private
 
   attr_accessor :_nodes
