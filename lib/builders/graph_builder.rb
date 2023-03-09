@@ -1,4 +1,4 @@
-require_relative './graph'
+require_relative '../graph'
 
 class GraphBuilder
   attr_accessor :store
