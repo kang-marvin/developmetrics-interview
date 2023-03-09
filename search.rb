@@ -54,16 +54,13 @@ class Search
     nodes_collection << graph if index == ZERO
     root = nodes_collection[index] rescue nil
     return if root.nil?
-    root_nodes = root.nodes
 
-    track_depth_level(index, root_nodes) do
-      root_nodes.each do |node|
-        next if nodes_collection.include? node
-        nodes_collection << node
-      end
-
-      breadth_first((index+1), filters)
+    root.nodes.each do |node|
+      next if nodes_collection.include? node
+      nodes_collection << node
     end
+
+    breadth_first((index+1), filters)
   end
 
   def depth_first(level = 0, node = graph, filters = {})
@@ -73,10 +70,6 @@ class Search
     node.nodes.each do |node|
       depth_first((level+1), node, filters)
     end
-  end
-
-  def track_depth_level(index, root_nodes)
-    yield
   end
 
 end
