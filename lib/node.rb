@@ -19,7 +19,7 @@ class Node
   end
 
   def value
-    "#{name}: #{country.upcase}"
+    "#{name}: #{country&.upcase}"
   end
 
   private
