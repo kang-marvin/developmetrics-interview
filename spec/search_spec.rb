@@ -88,6 +88,43 @@ RSpec.describe Search do
 
   end
 
+  describe 'Depth Traversal Path' do
+    context 'with default root node' do
+      it 'returns the correct path' do
+        results = builder('jamie US', 'DEPTH')
+        expected_result = [
+          "jamie US", "timur UA", "pablo ES", "carlos ES",
+          "julie FR", "tom UK", "marc US", "rob US",
+          "ali UA", "oscar PT", "peter US", "anna ES",
+          "mike US", "marcos FR"
+        ]
+        expect(results).to match_array(expected_result)
+      end
+    end
+
+    context 'with set root node' do
+      it 'returns the correct path' do
+        results = builder('marc US', 'DEPTH')
+        expected_result = [
+          "marc US", "jamie US", "timur UA", "pablo ES",
+          "carlos ES", "julie FR", "tom UK", "rob US",
+          "ali UA", "oscar PT", "peter US",
+          "anna ES", "mike US", "marcos FR"
+        ]
+        expect(results).to match_array(expected_result)
+      end
+    end
+
+    context 'with set root node without children' do
+      it 'returns correct path of 1' do
+        results = builder('oscar PT', 'DEPTH')
+        expected_result = ["oscar PT"]
+        expect(results).to match_array(expected_result)
+      end
+    end
+
+  end
+
   private
 
   def builder(root, algo_type = 'BREADTH', data = {})
