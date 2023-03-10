@@ -35,8 +35,8 @@ class Search
     call(opts)
     results =
       nodes_collection[1..]
-        .group_by { |i| i.country }
-        .transform_values { |values| values.count}
+      .group_by { |i| i.country }
+      .transform_values { |values| values.count }
 
     puts results
   end
@@ -52,31 +52,36 @@ class Search
     filters = { friend: nil, friends_type: 'DIRECT' }
   )
     nodes_collection << graph if index == ZERO
-    root = nodes_collection[index] rescue nil
+    root = begin
+      nodes_collection[index]
+    rescue StandardError
+      nil
+    end
     return if root.nil?
 
     root.nodes.each do |node|
       next if nodes_collection.include? node
+
       nodes_collection << node
     end
 
-    breadth_first((index+1), filters)
+    breadth_first((index + 1), filters)
   end
 
   def depth_first(level = 0, node = graph, filters = {})
     return if nodes_collection.include? node
+
     nodes_collection << node
 
     node.nodes.each do |node|
-      depth_first((level+1), node, filters)
+      depth_first((level + 1), node, filters)
     end
   end
-
 end
 
 # Search for Jamie ́s friends distribution by Country ex: US: 2, ES:3
 
-graph = FriendsGraph.new({root_node: 'jamie US'}).build(data)
+graph = FriendsGraph.new({ root_node: 'jamie US' }).build(data)
 search = Search.new(graph)
 
 # search.call({})
