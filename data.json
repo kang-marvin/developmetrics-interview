@@ -1,0 +1,17 @@
+{
+  "jamie US": [
+    "timur UA", "rob US",
+    "pablo ES", "ali UA",
+    "peter US", "mike US",
+    "marcos FR", "tom UK"
+  ],
+  "timur UA": [
+    "pablo ES", "carlos ES", "julie FR",
+    "tom UK"
+  ],
+  "ali UA": [ "oscar PT" ],
+  "peter US": [ "anna ES" ],
+  "tom UK": [ "marc US" ],
+  "mike US": [ "marc US" ],
+  "marc US": [ "jamie US" ]
+}
