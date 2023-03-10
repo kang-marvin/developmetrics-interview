@@ -13,9 +13,9 @@ RSpec.describe NodeHelper do
 
     context 'node name is not provided' do
       it 'raises ArgumentError' do
-        expect {
+        expect do
           NodeHelper.fetch_or_create_node('', graph)
-        }.to raise_error(ArgumentError)
+        end.to raise_error(ArgumentError)
       end
     end
 

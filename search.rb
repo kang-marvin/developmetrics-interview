@@ -41,25 +41,19 @@ class Search
     opts = { person: nil, friend_type: FriendType::DIRECT }
   )
     call(AlgorithmType::BREADTH, opts[:person])
-    results =
-      filter_by_friend_type(opts[:friend_type])
-        .group_by { |i| i.country }
-        .transform_values { |values| values.count }
-
-    results
+    filter_by_friend_type(opts[:friend_type])
+      .group_by { |i| i.country }
+      .transform_values { |values| values.count }
   end
 
   def friends_by_country(
     opts = { person: nil, from_country: nil, friend_type: FriendType::DIRECT }
   )
     call(AlgorithmType::BREADTH, opts[:person])
-    results =
-      from_country(
-        filter_by_friend_type(opts[:friend_type]),
-        opts[:from_country]
-      ).map { |node| node.name }
-
-    results
+    from_country(
+      filter_by_friend_type(opts[:friend_type]),
+      opts[:from_country]
+    ).map { |node| node.name }
   end
 
   private
@@ -72,19 +66,24 @@ class Search
     user = nil
   )
     nodes_collection << root_node_in_graph if index == ZERO
-    root = nodes_collection[index] rescue nil
+    root = begin
+      nodes_collection[index]
+    rescue StandardError
+      nil
+    end
     return if root.nil?
+
     root_nodes = root.nodes
 
-    if (
-      root.name == user &&
-      nodes_collection.include?(root)
-    )
+    if root.name == user &&
+       nodes_collection.include?(root)
+
       @person_direct_friend_nodes = root_nodes
     end
 
     root_nodes.each do |node|
       next if nodes_collection.include? node
+
       nodes_collection << node
     end
 
@@ -102,10 +101,11 @@ class Search
   end
 
   def filter_by_friend_type(type)
-    result = type == FriendType::DIRECT ?
-      (nodes_collection & person_direct_friend_nodes) :
+    if type == FriendType::DIRECT
+      (nodes_collection & person_direct_friend_nodes)
+    else
       (nodes_collection - person_direct_friend_nodes - [root_node_in_graph])
-    return result
+    end
   end
 
   def from_country(list, country)
@@ -117,29 +117,29 @@ search = Search.new(
   FriendsGraph.new({ root_node: 'jamie US' }).build(data)
 )
 
-#? Search for Jamie ́s friends distribution by Country ex: US: 2, ES:3
+# ? Search for Jamie ́s friends distribution by Country ex: US: 2, ES:3
 
 puts search.friends_distribution_by_country(
   { person: 'jamie', friend_type: FriendType::DIRECT }
 ).inspect
 
-#? Search for friends of Jamie ́s friends distribution by Country ex: UA: 3, FR:4 (Friend
-#? of friend, should not be friend of jamie directly
+# ? Search for friends of Jamie ́s friends distribution by Country ex: UA: 3, FR:4 (Friend
+# ? of friend, should not be friend of jamie directly
 
 puts search.friends_distribution_by_country(
   { person: 'jamie', friend_type: FriendType::INDIRECT }
 ).inspect
 
-#? Search for a friend of Jamie's friends who lives in the US (should not be friend with )
+# ? Search for a friend of Jamie's friends who lives in the US (should not be friend with )
 puts search.friends_by_country(
   { person: 'jamie', from_country: 'US', friend_type: FriendType::INDIRECT }
 ).inspect
 
-#? Search for a friend of Jamie who lives in Ukraine but has no Spanish friends
-#! Not ye implemented.
+# ? Search for a friend of Jamie who lives in Ukraine but has no Spanish friends
+# ! Not ye implemented.
 # puts search.friends_by_country_without_friends_from(
 #   { person: 'jamie', from_country: 'UA', no_friends_from_country: 'ES' friend_type: FriendType::INDIRECT }
 # ).inspect
 
-#? Results to be shown in a Graph (use https://mermaid.js.org/ syntax)
-#! Not yet implemented.
+# ? Results to be shown in a Graph (use https://mermaid.js.org/ syntax)
+# ! Not yet implemented.

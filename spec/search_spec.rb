@@ -2,26 +2,25 @@ require_relative '../search'
 require_relative '../lib/friends_graph'
 
 DATA = {
-  "jamie US": [
-    "timur UA", "rob US",
-    "pablo ES", "ali UA",
-    "peter US", "mike US",
-    "marcos FR", "tom UK"
+  'jamie US': [
+    'timur UA', 'rob US',
+    'pablo ES', 'ali UA',
+    'peter US', 'mike US',
+    'marcos FR', 'tom UK'
   ],
-  "timur UA": [
-    "pablo ES", "carlos ES", "julie FR",
-    "tom UK"
+  'timur UA': [
+    'pablo ES', 'carlos ES', 'julie FR',
+    'tom UK'
   ],
-  "ali UA": [ "oscar PT" ],
-  "peter US": [ "anna ES" ],
-  "tom UK": [ "marc US" ],
-  "mike US": [ "marc US" ],
-  "marc US": [ "jamie US" ]
+  'ali UA': ['oscar PT'],
+  'peter US': ['anna ES'],
+  'tom UK': ['marc US'],
+  'mike US': ['marc US'],
+  'marc US': ['jamie US']
 }
 
 RSpec.describe Search do
   describe 'Traversal' do
-
     context 'without setting root node' do
       it 'uses head node as the root' do
         results = builder('')
@@ -46,11 +45,10 @@ RSpec.describe Search do
 
     context '' do
       it 'does not have duplicates' do
-        results = builder(nil, '', {'marc US': [ 'jamie US' ]})
+        results = builder(nil, '', { 'marc US': ['jamie US'] })
         expect(results.count('marc US')).to eql(1)
       end
     end
-
   end
 
   describe 'Breadth Traversal Path' do
@@ -58,9 +56,9 @@ RSpec.describe Search do
       it 'returns the correct path' do
         results = builder('jamie US')
         expected_result = [
-          "jamie US", "timur UA", "pablo ES", "carlos ES",
-          "julie FR", "tom UK", "marc US", "rob US", "ali UA",
-          "oscar PT", "peter US", "anna ES", "mike US", "marcos FR"
+          'jamie US', 'timur UA', 'pablo ES', 'carlos ES',
+          'julie FR', 'tom UK', 'marc US', 'rob US', 'ali UA',
+          'oscar PT', 'peter US', 'anna ES', 'mike US', 'marcos FR'
         ]
         expect(results).to match_array(expected_result)
       end
@@ -70,9 +68,9 @@ RSpec.describe Search do
       it 'returns the correct path' do
         results = builder('marc US')
         expected_result = [
-          "marc US", "jamie US", "timur UA", "rob US", "pablo ES",
-          "ali UA", "peter US", "mike US", "marcos FR", "tom UK",
-          "carlos ES", "julie FR", "oscar PT", "anna ES"
+          'marc US', 'jamie US', 'timur UA', 'rob US', 'pablo ES',
+          'ali UA', 'peter US', 'mike US', 'marcos FR', 'tom UK',
+          'carlos ES', 'julie FR', 'oscar PT', 'anna ES'
         ]
         expect(results).to match_array(expected_result)
       end
@@ -81,11 +79,10 @@ RSpec.describe Search do
     context 'with set root node without children' do
       it 'returns correct path of 1' do
         results = builder('oscar PT')
-        expected_result = ["oscar PT"]
+        expected_result = ['oscar PT']
         expect(results).to match_array(expected_result)
       end
     end
-
   end
 
   describe 'Depth Traversal Path' do
@@ -93,10 +90,10 @@ RSpec.describe Search do
       it 'returns the correct path' do
         results = builder('jamie US', 'DEPTH')
         expected_result = [
-          "jamie US", "timur UA", "pablo ES", "carlos ES",
-          "julie FR", "tom UK", "marc US", "rob US",
-          "ali UA", "oscar PT", "peter US", "anna ES",
-          "mike US", "marcos FR"
+          'jamie US', 'timur UA', 'pablo ES', 'carlos ES',
+          'julie FR', 'tom UK', 'marc US', 'rob US',
+          'ali UA', 'oscar PT', 'peter US', 'anna ES',
+          'mike US', 'marcos FR'
         ]
         expect(results).to match_array(expected_result)
       end
@@ -106,10 +103,10 @@ RSpec.describe Search do
       it 'returns the correct path' do
         results = builder('marc US', 'DEPTH')
         expected_result = [
-          "marc US", "jamie US", "timur UA", "pablo ES",
-          "carlos ES", "julie FR", "tom UK", "rob US",
-          "ali UA", "oscar PT", "peter US",
-          "anna ES", "mike US", "marcos FR"
+          'marc US', 'jamie US', 'timur UA', 'pablo ES',
+          'carlos ES', 'julie FR', 'tom UK', 'rob US',
+          'ali UA', 'oscar PT', 'peter US',
+          'anna ES', 'mike US', 'marcos FR'
         ]
         expect(results).to match_array(expected_result)
       end
@@ -118,11 +115,10 @@ RSpec.describe Search do
     context 'with set root node without children' do
       it 'returns correct path of 1' do
         results = builder('oscar PT', 'DEPTH')
-        expected_result = ["oscar PT"]
+        expected_result = ['oscar PT']
         expect(results).to match_array(expected_result)
       end
     end
-
   end
 
   describe 'Friends Distribution by Country' do
@@ -140,7 +136,7 @@ RSpec.describe Search do
         result = friend_distribution_by_country_builder(
           'jamie US', AlgorithmType::BREADTH, { person: 'jamie', friend_type: FriendType::DIRECT }
         )
-        expect(result).to eql({"ES"=>1, "FR"=>1, "UA"=>2, "UK"=>1, "US"=>3})
+        expect(result).to eql({ 'ES' => 1, 'FR' => 1, 'UA' => 2, 'UK' => 1, 'US' => 3 })
       end
     end
 
@@ -149,7 +145,7 @@ RSpec.describe Search do
         result = friend_distribution_by_country_builder(
           'jamie US', AlgorithmType::BREADTH, { person: 'jamie', friend_type: FriendType::INDIRECT }
         )
-        expect(result).to eql({"ES"=>2, "FR"=>1, "PT"=>1, "US"=>1})
+        expect(result).to eql({ 'ES' => 2, 'FR' => 1, 'PT' => 1, 'US' => 1 })
       end
     end
   end
@@ -162,7 +158,7 @@ RSpec.describe Search do
     ).call(algo_type, {})
   end
 
-  def friend_distribution_by_country_builder(root, algo_type = AlgorithmType::BREADTH, data)
+  def friend_distribution_by_country_builder(root, _algo_type = AlgorithmType::BREADTH, data)
     Search.new(
       FriendsGraph.new({ root_node: root }).build(DATA)
     ).friends_distribution_by_country(data)

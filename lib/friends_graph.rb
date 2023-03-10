@@ -2,8 +2,7 @@ require 'json'
 require_relative './builders/graph_builder'
 
 class FriendsGraph
-
-  def initialize(opts = { root_node: ''})
+  def initialize(opts = { root_node: '' })
     @root_node = opts[:root_node]
   end
 
