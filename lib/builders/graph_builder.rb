@@ -14,7 +14,7 @@ class GraphBuilder
   end
 
   def set_root_node(value)
-    key = upcase_value(value)
+    key = upcase_value(value.to_s)
     result = if store[key].nil?
                store.values[0]
              else
