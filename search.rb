@@ -46,6 +46,19 @@ class Search
     results
   end
 
+  def friends_by_country(
+    opts = { friend: nil, country: nil, friends_type: FriendsType::DIRECT }
+  )
+    call('BREADTH', opts[:friend])
+    results =
+      from_country(
+        filter_by_friend_type(opts[:friends_type]),
+        opts[:country]
+      ).map { |node| node.name }
+
+    results
+  end
+
   private
 
   attr_accessor :nodes_collection,
@@ -92,6 +105,10 @@ class Search
       (nodes_collection - friend_direct_nodes - [graph])
     return result
   end
+
+  def from_country(list, country)
+    list.select { |node| node.country == country }
+  end
 end
 
 search = Search.new(
@@ -100,9 +117,9 @@ search = Search.new(
 
 #? Search for Jamie ́s friends distribution by Country ex: US: 2, ES:3
 
-# puts search.friends_distribution_by_country(
-#   { friend: 'jamie', friends_type: FriendsType::DIRECT }
-# ).inspect
+puts search.friends_distribution_by_country(
+  { friend: 'jamie', friends_type: FriendsType::DIRECT }
+).inspect
 
 #? Search for friends of Jamie ́s friends distribution by Country ex: UA: 3, FR:4 (Friend
 #? of friend, should not be friend of jamie directly
@@ -110,3 +127,17 @@ search = Search.new(
 puts search.friends_distribution_by_country(
   { friend: 'jamie', friends_type: FriendsType::INDIRECT }
 ).inspect
+
+#? Search for a friend of Jamie's friends who lives in the US (should not be friend with )
+puts search.friends_by_country(
+  { friend: 'jamie', country: 'US', friends_type: FriendsType::INDIRECT }
+).inspect
+
+#? Search for a friend of Jamie who lives in Ukraine but has no Spanish friends
+#! Not yet implemented.
+# puts search.friends_by_country_without_friends_from(
+#   { friend: 'jamie', country: 'UA', no_friends_from: 'ES' friends_type: FriendsType::INDIRECT }
+# ).inspect
+
+#? Results to be shown in a Graph (use https://mermaid.js.org/ syntax)
+#! Not yet implemented.
