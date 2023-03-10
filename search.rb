@@ -7,7 +7,8 @@ test_data_file = File.read('./data.json')
 data = JSON.parse(test_data_file)
 
 module FriendsType
-  DIRECT = 'direct'.freeze
+  DIRECT = 'DIRECT'.freeze
+  INDIRECT = 'INDIRECT'.freeze
 end
 
 class Search
@@ -19,7 +20,6 @@ class Search
     @graph = graph
     @nodes_collection = []
     @current_depth_level = ZERO
-    @list = []
   end
 
   def call(params)
@@ -34,10 +34,10 @@ class Search
   )
     call(opts)
     results =
-      nodes_collection
-        .to_a
+      nodes_collection[1..]
         .group_by { |i| i.country }
         .transform_values { |values| values.count}
+
     puts results
   end
 
@@ -76,11 +76,12 @@ end
 
 # Search for Jamie ́s friends distribution by Country ex: US: 2, ES:3
 
-graph = FriendsGraph.new({root_node: 'tom UK'}).build(data)
+graph = FriendsGraph.new({root_node: 'jamie US'}).build(data)
 search = Search.new(graph)
 
-search.call({})
+# search.call({})
 
-# search.friends_distribution_by_country(
-#   { friend: 'jamie' }.merge({ friends_type: FriendsType::DIRECT })
-# )
+search.friends_distribution_by_country(
+  { friend: 'timur' }.merge({ friends_type: FriendsType::DIRECT })
+  # { friend: 'jamie' }.merge({ friends_type: FriendsType::INDIRECT })
+)
