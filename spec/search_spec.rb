@@ -46,18 +46,54 @@ RSpec.describe Search do
 
     context '' do
       it 'does not have duplicates' do
-        results = builder(nil, {'marc US': [ 'jamie US' ]})
+        results = builder(nil, '', {'marc US': [ 'jamie US' ]})
         expect(results.count('marc US')).to eql(1)
       end
     end
 
-    private
+  end
 
-    def builder(root, data = {})
-      Search.new(
-        FriendsGraph.new({ root_node: root }).build(DATA.merge(data))
-      ).call({})
+  describe 'Breadth Traversal Path' do
+    context 'with default root node' do
+      it 'returns the correct path' do
+        results = builder('jamie US')
+        expected_result = [
+          "jamie US", "timur UA", "pablo ES", "carlos ES",
+          "julie FR", "tom UK", "marc US", "rob US", "ali UA",
+          "oscar PT", "peter US", "anna ES", "mike US", "marcos FR"
+        ]
+        expect(results).to match_array(expected_result)
+      end
+    end
+
+    context 'with set root node' do
+      it 'returns the correct path' do
+        results = builder('marc US')
+        expected_result = [
+          "marc US", "jamie US", "timur UA", "rob US", "pablo ES",
+          "ali UA", "peter US", "mike US", "marcos FR", "tom UK",
+          "carlos ES", "julie FR", "oscar PT", "anna ES"
+        ]
+        expect(results).to match_array(expected_result)
+      end
+    end
+
+    context 'with set root node without children' do
+      it 'returns correct path of 1' do
+        results = builder('oscar PT')
+        expected_result = ["oscar PT"]
+        expect(results).to match_array(expected_result)
+      end
     end
 
   end
+
+  private
+
+  def builder(root, algo_type = 'BREADTH', data = {})
+    Search.new(
+      FriendsGraph.new({ root_node: root }).build(DATA.merge(data))
+    ).call(algo_type, {})
+  end
+
 end
