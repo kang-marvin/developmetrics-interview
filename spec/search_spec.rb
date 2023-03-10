@@ -147,7 +147,7 @@ RSpec.describe Search do
     context 'with root as friend for INDIRECT' do
       it 'returns distribution by country' do
         result = friend_distribution_by_country_builder(
-          'jamie US', 'BREADTH', { friend: 'jamie', friends_type: 'DIRECT' }
+          'jamie US', 'BREADTH', { friend: 'jamie', friends_type: 'INDIRECT' }
         )
         expect(result).to eql({"ES"=>2, "FR"=>1, "PT"=>1, "US"=>1})
       end

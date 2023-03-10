@@ -38,13 +38,8 @@ class Search
     opts = { friend: nil, friends_type: FriendsType::DIRECT }
   )
     call('BREADTH', opts[:friend])
-    filtered_nodes =
-      opts[:friends_type] == FriendsType::DIRECT ?
-        nodes_collection & friend_direct_nodes :
-        nodes_collection - friend_direct_nodes - [graph]
-
     results =
-      filtered_nodes
+      filter_by_friend_type(opts[:friends_type])
         .group_by { |i| i.country }
         .transform_values { |values| values.count }
 
@@ -90,16 +85,28 @@ class Search
       depth_first((level + 1), node, filters)
     end
   end
+
+  def filter_by_friend_type(type)
+    result = type == FriendsType::DIRECT ?
+      (nodes_collection & friend_direct_nodes) :
+      (nodes_collection - friend_direct_nodes - [graph])
+    return result
+  end
 end
 
-# Search for Jamie ́s friends distribution by Country ex: US: 2, ES:3
+search = Search.new(
+  FriendsGraph.new({ root_node: 'jamie US' }).build(data)
+)
 
-graph = FriendsGraph.new({ root_node: 'marc US' }).build(data)
-search = Search.new(graph)
+#? Search for Jamie ́s friends distribution by Country ex: US: 2, ES:3
 
-# puts search.call('DEPTH', {}).inspect
+# puts search.friends_distribution_by_country(
+#   { friend: 'jamie', friends_type: FriendsType::DIRECT }
+# ).inspect
+
+#? Search for friends of Jamie ́s friends distribution by Country ex: UA: 3, FR:4 (Friend
+#? of friend, should not be friend of jamie directly
 
 puts search.friends_distribution_by_country(
-  { friend: 'timur' }.merge({ friends_type: FriendsType::INDIRECT })
-  # { friend: 'jamie' }.merge({ friends_type: FriendsType::INDIRECT })
+  { friend: 'jamie', friends_type: FriendsType::INDIRECT }
 ).inspect
