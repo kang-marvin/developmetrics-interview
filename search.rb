@@ -20,52 +20,65 @@ class Search
     @graph = graph
     @nodes_collection = []
     @current_depth_level = ZERO
+    @friend_direct_nodes = []
   end
 
-  def call(params)
-    breadth_first(ZERO, params)
-    # depth_first(ZERO, graph, params)
+  def call(algo_type = 'BREADTH', params)
+    case algo_type.upcase
+    when 'DEPTH'
+      depth_first(ZERO, graph, params)
+    else
+      breadth_first(ZERO, params)
+    end
 
-    puts nodes_collection.map(&:value).inspect
+    nodes_collection.map(&:value)
   end
 
   def friends_distribution_by_country(
     opts = { friend: nil, friends_type: FriendsType::DIRECT }
   )
-    call(opts)
-    results =
-      nodes_collection[1..]
-      .group_by { |i| i.country }
-      .transform_values { |values| values.count }
+    call('BREADTH', opts[:friend])
+    filtered_nodes =
+      opts[:friends_type] == FriendsType::DIRECT ?
+        nodes_collection & friend_direct_nodes :
+        nodes_collection - friend_direct_nodes - [graph]
 
-    puts results
+    results =
+      filtered_nodes
+        .group_by { |i| i.country }
+        .transform_values { |values| values.count }
+
+    results
   end
 
   private
 
   attr_accessor :nodes_collection,
                 :current_depth_level,
-                :list
+                :friend_direct_nodes
 
   def breadth_first(
     index = ZERO,
-    filters = { friend: nil, friends_type: 'DIRECT' }
+    user = nil
   )
     nodes_collection << graph if index == ZERO
-    root = begin
-      nodes_collection[index]
-    rescue StandardError
-      nil
-    end
+    root = nodes_collection[index] rescue nil
     return if root.nil?
+    root_nodes = root.nodes
 
-    root.nodes.each do |node|
+    if (
+      root.name == user &&
+      nodes_collection.include?(root)
+    )
+      @friend_direct_nodes = root_nodes
+    end
+
+    root_nodes.each do |node|
       next if nodes_collection.include? node
-
       nodes_collection << node
     end
 
-    breadth_first((index + 1), filters)
+    breadth_first((index + 1), user)
   end
 
   def depth_first(level = 0, node = graph, filters = {})
@@ -81,12 +94,12 @@ end
 
 # Search for Jamie ́s friends distribution by Country ex: US: 2, ES:3
 
-graph = FriendsGraph.new({ root_node: 'jamie US' }).build(data)
+graph = FriendsGraph.new({ root_node: 'marc US' }).build(data)
 search = Search.new(graph)
 
-# search.call({})
+# puts search.call('DEPTH', {}).inspect
 
-search.friends_distribution_by_country(
-  { friend: 'timur' }.merge({ friends_type: FriendsType::DIRECT })
+puts search.friends_distribution_by_country(
+  { friend: 'timur' }.merge({ friends_type: FriendsType::INDIRECT })
   # { friend: 'jamie' }.merge({ friends_type: FriendsType::INDIRECT })
-)
+).inspect
