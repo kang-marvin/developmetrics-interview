@@ -125,6 +125,35 @@ RSpec.describe Search do
 
   end
 
+  describe 'Friends Distribution by Country' do
+    context 'without setting the friend' do
+      it 'returns empty distribution' do
+        result = friend_distribution_by_country_builder(
+          '', 'BREADTH', { friend: '', friends_type: 'DIRECT' }
+        )
+        expect(result).to be_empty
+      end
+    end
+
+    context 'with root as friend for DIRECT' do
+      it 'returns distribution by country' do
+        result = friend_distribution_by_country_builder(
+          'jamie US', 'BREADTH', { friend: 'jamie', friends_type: 'DIRECT' }
+        )
+        expect(result).to eql({"ES"=>1, "FR"=>1, "UA"=>2, "UK"=>1, "US"=>3})
+      end
+    end
+
+    context 'with root as friend for INDIRECT' do
+      it 'returns distribution by country' do
+        result = friend_distribution_by_country_builder(
+          'jamie US', 'BREADTH', { friend: 'jamie', friends_type: 'DIRECT' }
+        )
+        expect(result).to eql({"ES"=>2, "FR"=>1, "PT"=>1, "US"=>1})
+      end
+    end
+  end
+
   private
 
   def builder(root, algo_type = 'BREADTH', data = {})
@@ -133,4 +162,9 @@ RSpec.describe Search do
     ).call(algo_type, {})
   end
 
+  def friend_distribution_by_country_builder(root, algo_type = 'BREADTH', data)
+    Search.new(
+      FriendsGraph.new({ root_node: root }).build(DATA)
+    ).friends_distribution_by_country(data)
+  end
 end
